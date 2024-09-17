@@ -1,18 +1,19 @@
 部署运行
 
-1、拉取镜像
-> docker pull congwei741/vue-nginx    
-> docker pull congwei741/service
+先部署后端，再部署前端。
 
-2、创建网络    
-> docker create network bilibili
-
-3、运行容器    
-先运行后端，再运行前端
-
-> docker run -d --name back -p 8080:8080 --network bilibili congwei741/service:latest    
-> docker run -d --name front -p 80:80 --network bilibili congwei741/vue-nginx:latest
-
-4、浏览器访问
-
-> http://localhost/
+## 后端    
+1、生成jar包    
+2、生成镜像    
+docker build -t bilibili-download-service .   
+3、创建网络   
+docker network create bilibili     
+4、将老的容器删掉，重新运行新的镜像    
+ docker run -d --name back -p 7070:8080 --network bilibili bilibili-download-service:latest    
+## 前端    
+1、构建    
+npm run build    
+2、生成镜像    
+docker build -t bilibili-download-website .   
+3、将老的容器删掉，重新运行新的镜像   
+docker run -d --name front -p 80:80 --network bilibili bilibili-download-website:latest   
