@@ -1,8 +1,10 @@
 
 export class BilibiliApi {
-  static async getDownloadUrl(bvid) {
-    const res = await fetch('http://localhost/api/bilibili/video/download-url?bvid=' + bvid);
-    const body = await res.text();
+  static BASE_URL = 'http://localhost';
+
+  static async getVideoInfo(bvid) {
+    const res = await fetch(`${this.BASE_URL}/api/bilibili/video?bvid=${bvid}`);
+    const body = await res.json();
     return body;
   }
 }

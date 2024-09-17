@@ -22,14 +22,14 @@ public class VideoServiceImpl implements VideoService{
     private String SESS_DATA;
 
     @Override
-    public String getDownloadUrl(String bvid) {
+    public VideoEntity getDownloadUrl(String bvid) {
         RestTemplate restTemplate = new RestTemplate();
 
-        String cid = getCid(bvid);
+        VideoEntity videoEntity = getCid(bvid);
 
         URI targetUrl = UriComponentsBuilder.fromHttpUrl(GET_DOWNLOAD_URL)
                 .queryParam("bvid", bvid)
-                .queryParam("cid", cid)
+                .queryParam("cid", videoEntity.getCid())
                 .queryParam("qn", 80)
                 .queryParam("type", "mp4")
                 .queryParam("platform", "html5")
@@ -44,11 +44,14 @@ public class VideoServiceImpl implements VideoService{
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<DownloadUrlResponse> response = restTemplate.exchange(targetUrl, HttpMethod.GET, entity, DownloadUrlResponse.class);
-        return Objects.requireNonNull(response.getBody()).getData().getDurl().get(0).getUrl();
+
+        videoEntity.setUrl(Objects.requireNonNull(response.getBody()).getData().getDurl().get(0).getUrl());
+
+        return videoEntity;
     }
 
     @Override
-    public String getCid(String bvid) {
+    public VideoEntity getCid(String bvid) {
         RestTemplate restTemplate = new RestTemplate();
 
         URI targetUrl = UriComponentsBuilder.fromHttpUrl(GET_CID_URL)
@@ -59,6 +62,10 @@ public class VideoServiceImpl implements VideoService{
 
         ResponseEntity<CidResponse> response = restTemplate.getForEntity(targetUrl, CidResponse.class);
 
-        return Objects.requireNonNull(response.getBody()).getData().getCid();
+        VideoEntity videoEntity = new VideoEntity();
+        videoEntity.setPic(Objects.requireNonNull(response.getBody()).getData().getPic());
+        videoEntity.setTitle(response.getBody().getData().getTitle());
+        videoEntity.setCid(response.getBody().getData().getCid());
+        return videoEntity;
     }
 }

@@ -16,6 +16,8 @@ public class CidResponse {
         private String cid;
 
         private String pic;
+
+        private String title;
     }
 
 }
