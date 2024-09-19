@@ -5,7 +5,7 @@ import { BilibiliApi } from '@/api/BiliBiliApi.js';
 
 const url = ref();
 const videInfo = ref({
-  url: '',
+  pages: [],
   pic: '',
   title: ''
 });
@@ -27,7 +27,6 @@ async function handleParse() {
   const bvid = getBvid(url.value);
   console.log(bvid);
   videInfo.value = await BilibiliApi.getVideoInfo(bvid);
-  console.log(videInfo.value);
 }
 </script>
 
@@ -40,9 +39,17 @@ async function handleParse() {
     <el-button @click="handleParse">解析</el-button>
   </div>
 
-  <div style="width: 80%; margin: auto; margin-top: 100px;">
+  <div style="width: 80%; margin: auto; margin-top: 100px; display: flex;">
     <img :src="videInfo.pic" width="400px">
-    <a :href="videInfo.url">{{ videInfo.title }}</a>
+    <span style="margin-left: 10px;">{{ videInfo.title }}</span>
+  </div>
+
+  <div style="width: 80%;  margin: auto; margin-top: 60px;">
+    <ul>
+      <li v-for="page in videInfo.pages">
+        <a :href="page.url">{{ page.part }}</a>
+      </li>
+    </ul>
   </div>
 </template>
 

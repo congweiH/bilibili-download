@@ -2,6 +2,8 @@ package com.congwei.service.service;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class CidResponse {
 
@@ -13,11 +15,18 @@ public class CidResponse {
 
     @lombok.Data
     static class Data {
-        private String cid;
-
         private String pic;
 
         private String title;
+
+        private List<Page> pages;
+    }
+
+    @lombok.Data
+    public static class Page {
+        private String cid;
+        private String part;
+        private String url;
     }
 
 }

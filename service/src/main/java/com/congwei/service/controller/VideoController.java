@@ -19,9 +19,9 @@ public class VideoController {
         VideoEntity videoEntity = videoService.getDownloadUrl(bvid);
 
         VideoResponse videoResponse = new VideoResponse();
-        videoResponse.setUrl(videoEntity.getUrl());
         videoResponse.setPic(videoEntity.getPic());
         videoResponse.setTitle(videoEntity.getTitle());
+        videoResponse.setPages(videoEntity.getPages());
 
         return ResponseEntity.ok(videoResponse);
     }

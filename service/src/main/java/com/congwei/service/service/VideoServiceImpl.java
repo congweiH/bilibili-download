@@ -27,26 +27,24 @@ public class VideoServiceImpl implements VideoService{
 
         VideoEntity videoEntity = getCid(bvid);
 
-        URI targetUrl = UriComponentsBuilder.fromHttpUrl(GET_DOWNLOAD_URL)
-                .queryParam("bvid", bvid)
-                .queryParam("cid", videoEntity.getCid())
-                .queryParam("qn", 80)
-                .queryParam("type", "mp4")
-                .queryParam("platform", "html5")
-                .queryParam("high_quality", "1")
-                .build()
-                .encode()
-                .toUri();
+        for (CidResponse.Page page : videoEntity.getPages()) {
+            URI targetUrl = UriComponentsBuilder.fromHttpUrl(GET_DOWNLOAD_URL)
+                    .queryParam("bvid", bvid)
+                    .queryParam("cid", page.getCid())
+                    .queryParam("qn", 80)
+                    .queryParam("type", "mp4")
+                    .queryParam("platform", "html5")
+                    .queryParam("high_quality", "1")
+                    .build()
+                    .encode()
+                    .toUri();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Cookie", "SESSDATA=" + SESS_DATA);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Cookie", "SESSDATA=" + SESS_DATA);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<DownloadUrlResponse> response = restTemplate.exchange(targetUrl, HttpMethod.GET, entity, DownloadUrlResponse.class);
-
-        videoEntity.setUrl(Objects.requireNonNull(response.getBody()).getData().getDurl().get(0).getUrl());
-
+            ResponseEntity<DownloadUrlResponse> response = restTemplate.exchange(targetUrl, HttpMethod.GET, entity, DownloadUrlResponse.class);
+            page.setUrl(Objects.requireNonNull(response.getBody()).getData().getDurl().get(0).getUrl());
+        }
         return videoEntity;
     }
 
@@ -62,10 +60,12 @@ public class VideoServiceImpl implements VideoService{
 
         ResponseEntity<CidResponse> response = restTemplate.getForEntity(targetUrl, CidResponse.class);
 
+        CidResponse.Data data = Objects.requireNonNull(response.getBody()).getData();
+
         VideoEntity videoEntity = new VideoEntity();
-        videoEntity.setPic(Objects.requireNonNull(response.getBody()).getData().getPic());
-        videoEntity.setTitle(response.getBody().getData().getTitle());
-        videoEntity.setCid(response.getBody().getData().getCid());
+        videoEntity.setPic(data.getPic());
+        videoEntity.setTitle(data.getTitle());
+        videoEntity.setPages(data.getPages());
         return videoEntity;
     }
 }
